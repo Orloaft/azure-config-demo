@@ -1,35 +1,103 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="demo-template">
-  <devices xmlns="http://tail-f.com/ns/ncs">
-    <device>
-      <name>{/device}</name>
-      <config>
-        <access-list xmlns="urn:ios">
-          <access-list-standard-range>
-            <listnumber>1</listnumber>
-            <std-access-list-rule>
-              <rule>permit</rule>
-            </std-access-list-rule>
-          </access-list-standard-range>
-          <access-list-extended-range>
-            <listnumber>103</listnumber>
-            <ext-access-list-rule>
-              <rule>permit ip 192.168.0.0 0.0.255.255 10.149.0.0 0.0.255.255</rule>
-            </ext-access-list-rule>
-            <ext-access-list-rule>
-              <rule>permit</rule>
-            </ext-access-list-rule>
-            <ext-access-list-rule>
-		    <rule>permit udp host {/azure-ip}</rule>
-            </ext-access-list-rule>
-            <ext-access-list-rule>
-		    <rule>permit udp host {/azure-ip} eq isakmp host {/out-ip}</rule>
-            </ext-access-list-rule>
-            <ext-access-list-rule>
-		    <rule>permit esp host {/azure-ip} host {/out-ip}</rule>
-            </ext-access-list-rule>
-          </access-list-extended-range>
-        </access-list>
-      </config>
-    </device>
-  </devices>
+ <devices xmlns="http://tail-f.com/ns/ncs">
+               <device>
+                 <name>{/device}</name>
+                 <config>
+                   <crypto xmlns="urn:ios">
+                     <ikev2>
+                       <keyring>
+                         <name>azure-keyring</name>
+                         <peer>
+                           <name>{/azure-ip}</name>
+                           <address>
+                             <ipv4-address>{/azure-ip}</ipv4-address>
+                           </address>
+                           <pre-shared-key>
+                             <secret>12345</secret>
+                           </pre-shared-key>
+                         </peer>
+                       </keyring>
+                       <profile>
+                         <name>azure-profile</name>
+                         <match>
+                           <identity>
+                             <remote>
+                               <address>
+                                 <name>{/azure-ip}</name>
+                                 <mask>255.255.255.255</mask>
+                               </address>
+                             </remote>
+                           </identity>
+                         </match>
+                         <authentication>
+                           <local>
+                             <pre-share/>
+                           </local>
+                           <remote>
+                             <pre-share/>
+                           </remote>
+                         </authentication>
+                         <keyring>
+                           <local>azure-keyring</local>
+                         </keyring>
+                       </profile>
+                     </ikev2>
+                     <ipsec>
+                       <profile>
+                         <name>vti</name>
+                         <set>
+                           <transform-set>azure-ipsec-proposal-set</transform-set>
+                           <ikev2-profile>azure-profile</ikev2-profile>
+                         </set>
+                       </profile>
+                     </ipsec>
+                   </crypto>
+                   <interface xmlns="urn:ios">
+                     <Tunnel>
+                       <name>1</name>
+                       <ip>
+                         <address>
+                           <primary>
+                             <address>169.254.0.1</address>
+                             <mask>255.255.255.0</mask>
+                           </primary>
+                         </address>
+                         <tcp>
+                           <adjust-mss>1350</adjust-mss>
+                         </tcp>
+                       </ip>
+                       <tunnel>
+                         <source>GigabitEthernet0/1</source>
+                         <destination>{/azure-ip}</destination>
+                         <mode>
+                           <ipsec>
+                             <ipv4/>
+                           </ipsec>
+                         </mode>
+                         <protection>
+                           <ipsec>
+                             <profile>vti</profile>
+                           </ipsec>
+                         </protection>
+                       </tunnel>
+                     </Tunnel>
+                   </interface>
+                   <access-list xmlns="urn:ios">
+                     <access-list-extended-range>
+                       <listnumber>103</listnumber>
+                       <ext-access-list-rule>
+                         <rule>permit ip 192.168.0.0 0.0.255.255 10.149.0.0 0.0.255.255</rule>
+                       </ext-access-list-rule>
+                       <ext-access-list-rule>
+                         <rule>permit udp host {/azure-ip} eq isakmp host {/out-ip}</rule>
+                       </ext-access-list-rule>
+                       <ext-access-list-rule>
+                         <rule>permit esp host {/azure-ip} host {/out-ip}</rule>
+                       </ext-access-list-rule>
+                     </access-list-extended-range>
+                   </access-list>
+                 </config>
+               </device>
+             </devices>
+
 </config-template>
