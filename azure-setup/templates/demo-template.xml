@@ -1,10 +1,12 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="demo-template">
  <devices xmlns="http://tail-f.com/ns/ncs">
+             <!--Local device to apply the service template to-->
                <device>    
                  <name>{/device}</name>
                  <config>
                    <crypto xmlns="urn:ios">
                      <ikev2>
+                     <!--Defining a keyring for ikev2 tunneling protocol-->
                        <keyring>
                          <name>azure-keyring</name>
                          <peer>
@@ -18,6 +20,7 @@
                          </peer>
                        </keyring>
                        <profile>
+                       <!--Defining a profile for the gateway we are connecting with. Assign the keyring-->
                          <name>azure-profile</name>
                          <match>
                            <identity>
@@ -43,6 +46,7 @@
                        </profile>
                      </ikev2>
                      <ipsec>
+                     <!--Defining profile for the virtual tunner interface, assigning it the ikev2 profile-->
                        <profile>
                          <name>vti</name>
                          <set>
@@ -52,7 +56,8 @@
                        </profile>
                      </ipsec>
                    </crypto>
-                   <interface xmlns="urn:ios">   
+                   <interface xmlns="urn:ios"> 
+                   <!--Defining the parameters for the tunnel through which cross premise traffic will be sent, assign vti profile-->  
                      <Tunnel>
                        <name>1</name>
                        <ip>
@@ -82,6 +87,7 @@
                        </tunnel>
                      </Tunnel>
                    </interface>
+                   <!-- In order to permit cross-premise traffic, access control list rules are provided below-->
                    <access-list xmlns="urn:ios">
                      <access-list-extended-range>
                        <listnumber>103</listnumber>
