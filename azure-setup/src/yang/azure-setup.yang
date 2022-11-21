@@ -1,0 +1,56 @@
+module azure-setup {
+
+  namespace "http://example.com/azure-setup";
+  prefix azure-setup;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  description
+    "provisioning config for microsoft azure";
+
+  revision 2016-01-01 {
+    description
+      "Initial revision.";
+  }
+
+  list azure-setup {
+    description "demo azure config service";
+
+    key name;
+    leaf name {
+      tailf:info "Unique service id";
+      tailf:cli-allow-range;
+      type string;
+    }
+
+    uses ncs:service-data;
+    ncs:servicepoint "demo-template";
+
+    
+    leaf-list device {
+      tailf:info "local device";
+      type leafref {
+        path "/ncs:devices/ncs:device/ncs:name";
+      }
+    }
+
+    leaf azure-ip {
+      tailf:info "azure gateway ip";
+ type string;
+}
+    leaf out-ip {
+      tailf:info "public ip of outgoing interface";
+      type string;
+    }
+     
+
+}
+}
