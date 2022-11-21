@@ -1,6 +1,6 @@
 <config-template xmlns="http://tail-f.com/ns/config/1.0" servicepoint="demo-template">
  <devices xmlns="http://tail-f.com/ns/ncs">
-               <device>
+               <device>    
                  <name>{/device}</name>
                  <config>
                    <crypto xmlns="urn:ios">
@@ -13,7 +13,7 @@
                              <ipv4-address>{/azure-ip}</ipv4-address>
                            </address>
                            <pre-shared-key>
-                             <secret>12345</secret>
+                             <secret>{/psk}</secret>
                            </pre-shared-key>
                          </peer>
                        </keyring>
@@ -52,7 +52,7 @@
                        </profile>
                      </ipsec>
                    </crypto>
-                   <interface xmlns="urn:ios">
+                   <interface xmlns="urn:ios">   
                      <Tunnel>
                        <name>1</name>
                        <ip>
@@ -99,5 +99,4 @@
                  </config>
                </device>
              </devices>
-
 </config-template>

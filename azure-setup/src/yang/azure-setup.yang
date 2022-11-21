@@ -14,7 +14,9 @@ module azure-setup {
   }
 
   description
-    "provisioning config for microsoft azure";
+    "provisioning config for microsoft azure:
+    This service uses a template to configure an IPSec VPN tunnel connecting your local device with the Azure gateway.
+    ";
 
   revision 2016-01-01 {
     description
@@ -35,7 +37,7 @@ module azure-setup {
     ncs:servicepoint "demo-template";
 
     
-    leaf-list device {
+    leaf-list device { 
       tailf:info "local device";
       type leafref {
         path "/ncs:devices/ncs:device/ncs:name";
@@ -43,10 +45,17 @@ module azure-setup {
     }
 
     leaf azure-ip {
+      mandatory true;
       tailf:info "azure gateway ip";
- type string;
+      type string;
 }
+    leaf psk {
+      mandatory true;
+      tailf:info "pre shared key for secure connection with gateway";
+      type string;
+    }
     leaf out-ip {
+      mandatory true;
       tailf:info "public ip of outgoing interface";
       type string;
     }
